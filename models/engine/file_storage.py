@@ -5,10 +5,12 @@ Defines a FileStorage Class
 
 import json
 
+
 class FileStorage:
     """Representation of a FileStorage"""
     __file_path = "file.json"
     __objects = {}
+
     def __init__(self):
         """initializes the storage"""
 
@@ -36,7 +38,7 @@ class FileStorage:
             with open(self.__file_path, "r") as k:
                 j_obj = json.load(k)
             for key in j_obj:
-                self.__objects[key] = classes[j_obj[key]["__class__"]](**j_obj[key])
+                self.__objects[key] = classes[j_obj[key]
+                                              ["__class__"]](**j_obj[key])
         except:
             pass
-        
