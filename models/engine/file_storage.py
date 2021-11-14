@@ -4,6 +4,13 @@ Defines a FileStorage Class
 """
 
 import json
+from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class FileStorage:
@@ -11,34 +18,32 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def __init__(self):
-        """initializes the storage"""
-
     def all(self):
         """returns the dictionary objects"""
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
         if obj is not None:
-            key = __class__.__name__ + "." + obj.id
-            self.__objects[key] = obj
+            key = obj.__class__.__name__ + "." + obj.id
+            FileStorage.__objects[key] = obj
 
     def save(self):
-        """serializes __objects to the JSON file"""
-        json_objects = {}
-        for key in self.__objects:
-            json_objects[key] = self.__objects[key].to_dict()
-        with open(self.__file_path, "w") as f:
-            json.dump(json_objects, f)
+        """serializes __objects to the JSON file path `__file_path`
+        """
+        a_copy = FileStorage.__objects
+        obj_dict = {obj: a_copy[obj].to_dict() for obj in a_copy.keys()}
+        with open(FileStorage.__file_path, "w") as f:
+            json.dump(obj_dict, f)
 
     def reload(self):
         """deserializes the JSON file to __objects"""
         try:
-            with open(self.__file_path, "r") as k:
-                j_obj = json.load(k)
-            for key in j_obj:
-                self.__objects[key] = classes[j_obj[key]
-                                              ["__class__"]](**j_obj[key])
-        except:
-            pass
+            with open(FileStorage.__file_path) as f:
+                objs = json.load(f)
+                for obj in objs.values():
+                    name = obj['__class__']
+                    del obj['__class__']
+                    self.new(eval(name)(**obj))
+        except FileNotFoundError:
+            return
